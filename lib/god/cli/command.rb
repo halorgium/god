@@ -31,11 +31,30 @@ module God
         elsif %w{start stop restart monitor unmonitor remove}.include?(@command)
           setup
           lifecycle_command
-        elsif @command == 'check'
-          check_command
+        elsif %w{test check}.include?(@command)
+          send("#{@command}_command")
         else
           puts "Command '#{@command}' is not valid. Run 'god --help' for usage"
           abort
+        end
+      end
+      
+      def test_command
+        config_file = @options[:config]
+
+        puts "Testing the configuration file"
+        puts
+
+        unless File.exist?(config_file)
+          abort "File not found: #{config_file}"
+        end
+        
+        begin
+          load config_file
+        rescue Exception => e
+          raise
+        else
+          puts "The configuration file is all good!"
         end
       end
       

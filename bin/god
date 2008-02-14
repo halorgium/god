@@ -18,6 +18,7 @@ begin
       god [-c <config file>] [-p <port> | -b] [-P <file>] [-l <file>] [-D]
       
     Querying:
+      god test [-c config file]
       god <command> <argument> [-p <port>]
       god <command> [-p <port>]
       god -v
@@ -36,6 +37,7 @@ begin
       quit                               stop god
       terminate                          stop god and all tasks
       check                              run self diagnostic
+      test                               test the config file
       
     Options:
   EOF
@@ -101,6 +103,9 @@ begin
   end
   
   # dispatch
+  if ARGV[0] == "test"
+    require 'god'
+    God::CLI::Command.new("test", options, ARGV)
   if !options[:config] && options[:version]
     require 'god'
     God::CLI::Version.version
