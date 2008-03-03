@@ -389,7 +389,7 @@ module God
   # Returns String[]:task_names
   def self.control(name, command)
     # get the list of items
-    items = Array(self.watches[name] || self.groups[name]).dup
+    items = self.find_watches_for(name)
     
     jobs = []
     
@@ -444,6 +444,14 @@ module God
     FileUtils.rm_f(self.pid) if self.pid
     self.server.stop if self.server
     exit!(0)
+  end
+  
+  # Find the watches for either the specified watch or group. 
+  #
+  # Return all the watches if nil if provided
+  def self.find_watches_for(name)
+    return self.watches.values if name.nil?
+    Array(self.watches[name] || self.groups[name]).dup
   end
   
   # Gather the status of each task.

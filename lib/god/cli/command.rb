@@ -66,10 +66,13 @@ module God
       end
       
       def status_command
-        watches = @server.status
-        watches.keys.sort.each do |name|
-          state = watches[name][:state]
-          puts "#{name}: #{state}"
+        watches = @server.find_watches_for(@args[1])
+        unless watches.empty?
+          watches.sort_by {|w| w.name}.each do |watch|
+            puts "#{watch.name}: #{watch.state}"
+          end
+        else
+          puts 'No matching task or group'
         end
       end
       

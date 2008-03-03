@@ -370,7 +370,41 @@ class TestGod < Test::Unit::TestCase
     God.expects(:exit!)
     God.terminate
   end
+
+  # find_watches_for
   
+  def test_find_watches_for_nil_should_show_return_all_watches
+    God.watch { |w| w.name = 'foo'; w.start = 'bar' }
+    
+    w = God.watches.values
+    set = God.find_watches_for(nil)
+    assert_equal(w, set)
+  end
+  
+  def test_find_watches_for_a_watch_should_show_return_the_watch
+    God.watch { |w| w.name = 'foo'; w.start = 'bar' }
+    
+    w = God.watches['foo']
+    set = God.find_watches_for('foo')
+    assert_equal([w], set)
+  end
+  
+  def test_find_watches_for_a_group_should_show_return_the_members
+    God.watch { |w| w.name = 'foo_1'; w.group = 'bar'; w.start = 'baz' }
+    God.watch { |w| w.name = 'foo_2'; w.group = 'bar'; w.start = 'baz' }
+    
+    w1, w2 = God.watches['foo_1'], God.watches['foo_2']
+    set = God.find_watches_for('bar')
+    assert_equal([w1, w2], set)
+  end
+  
+  def test_status_should_show_unmonitored_for_nil_state
+    God.watch { |w| w.name = 'foo'; w.start = 'bar' }
+    
+    w = God.watches['foo']
+    assert_equal({'foo' => {:state => :unmonitored}}, God.status)
+  end
+
   # status
   
   def test_status_should_show_state
